@@ -1,4 +1,11 @@
 .index {
-  flex-direction: column;
-  width: 100%;
+	// flex-direction: column;
+	width: 100%;
+	padding: 20rpx 30rpx;
+	box-sizing: border-box;
+}
+.add_btn,
+.dec_btn {
+	display: inline-block;
+	margin-right: 20rpx;
 }

@@ -21,8 +21,54 @@ class App extends Component {
 			backUrl: {},
 		},
 	};
-	componentDidMount() {
-		// console.log(Taro.ENV_TYPE);
+
+	onLaunch(options) {
+		console.log(options);
+		const app = this;
+		const systemInfo = Taro.getSystemInfoSync();
+		console.log(systemInfo);
+		Taro.login({
+			success: function (res) {
+				console.log('code:' + res.code);
+				if (res.code) {
+					//发起网络请求
+					Taro.request({
+						url: 'https://xuegushi.cn/wxxcx/userInfo',
+						data: {
+							code: res.code,
+							systemInfo: systemInfo,
+						},
+						success: function (res) {
+							if (res.data && !res.data.status) {
+								console.log('----------success------------');
+								Taro.setStorageSync('user', res.data);
+								Taro.setStorageSync(
+									'wx_token',
+									res.data.wx_token,
+								);
+
+								app.taroGlobalData.globalData.userInfo =
+									res.data;
+							} else {
+								try {
+									Taro.removeStorageSync('user');
+									Taro.removeStorageSync('closeTipsStatus');
+									Taro.removeStorageSync('wx_token');
+								} catch (e) {
+									// Do something when catch error
+									console.log('--clear storage fail---');
+								}
+							}
+						},
+					});
+				} else {
+					console.log('登录失败！' + res.errMsg);
+				}
+			},
+		});
+	}
+
+	componentDidMount(options) {
 		// 应用载入时，传入的相关参数
 		const AppOptions = Taro.getLaunchOptionsSync();
 		console.log(AppOptions);
